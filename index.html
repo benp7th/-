@@ -21,12 +21,12 @@
         #volume-slider { cursor: pointer; accent-color: #fca311; width: 80px; }
         .num-input { width: 50px; background: #0f3460; border: 1px solid #4a5568; color: white; border-radius: 4px; padding: 4px; text-align: center; }
         
-        #test-btn, #notification-btn { background-color: #fca311; color: #1a1a2e; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+        #test-btn, #notification-btn, #guide-btn { background-color: #fca311; color: #1a1a2e; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
         #notification-btn { background-color: #3a86ff; color: white; }
-        
+        #guide-btn { background-color: #9b5de5; color: white; }
+
         .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
         
-        /* カード全体。サイズ変動に合わせて中身が縮小するように設定 */
         .timer-card { 
             background-color: #16213e; 
             border: 3px double #fca311; 
@@ -64,6 +64,14 @@
         
         .settings { margin-top: 10px; font-size: clamp(0.7rem, 1vw, 0.9rem); color: #a0aec0; }
         .settings input { width: 40px; background: #0f3460; border: 1px solid #4a5568; color: white; border-radius: 4px; padding: 2px; text-align: center; }
+
+        /* モーダル用CSS */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #16213e; padding: 20px; border-radius: 15px; border: 2px solid #fca311; width: 90%; max-width: 500px; text-align: left; max-height: 80vh; overflow-y: auto; }
+        .modal-content h2 { color: #fca311; margin-top: 0; }
+        .modal-content ul { padding-left: 20px; }
+        .modal-content li { margin-bottom: 10px; color: #e2e8f0; }
+        .close-btn { background: #e63946; border: none; padding: 10px 20px; color: white; cursor: pointer; border-radius: 5px; display: block; margin: 20px auto 0; }
     </style>
 </head>
 <body>
@@ -85,10 +93,21 @@
             </div>
             <button id="test-btn" onclick="playNotificationSound()">テスト</button>
             <button id="notification-btn" onclick="requestNotificationPermission()">通知許可</button>
+            <button id="guide-btn" onclick="toggleGuide(true)">攻略ガイド</button>
         </div>
     </div>
 
     <div id="timers-container" class="container"></div>
+
+    <div id="guide-modal" class="modal" onclick="toggleGuide(false)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2>Taskbar Hero 攻略のコツ</h2>
+            <ul>
+                <li><strong>宝箱の効率的な管理:</strong> 宝箱のリスポーン時間はステージによって固定です。このタイマーを使い、ドロップする直前に復帰・周回できるようにルーティンを組みましょう。</li>
+                           </ul>
+            <button class="close-btn" onclick="toggleGuide(false)">閉じる</button>
+        </div>
+    </div>
 
     <script>
         let timers = [];
@@ -98,8 +117,11 @@
         const diffColors = { "ノーマル": "#2a9d8f", "ナイトメア": "#3a86ff", "ヘル": "#9d4edd", "トーメント": "#ff0054" };
         for (let g = 1; g <= 3; g++) { for (let n = 1; n <= 9; n++) stageNumbers.push(`${g}-${n}`); }
 
+        function toggleGuide(show) {
+            document.getElementById('guide-modal').style.display = show ? 'flex' : 'none';
+        }
+
         function initApp() {
-            // サイズ設定の読み込み
             const savedWidth = localStorage.getItem('tbh_card_width') || '280';
             const savedHeight = localStorage.getItem('tbh_card_height') || '350';
             
